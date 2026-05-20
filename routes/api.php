@@ -13,6 +13,12 @@ Route::prefix('produtos')->group(function () {
 });
 
 Route::prefix('compras')->group(function () {
+
+    Route::get('/', [
+        PurchaseController::class,
+        'index',
+    ]);
+
     Route::post('/', [
         PurchaseController::class,
         'store',
