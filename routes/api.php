@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\PurchaseController;
+use App\Http\Controllers\Api\SaleController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('produtos')->group(function () {
@@ -13,6 +15,13 @@ Route::prefix('produtos')->group(function () {
 Route::prefix('compras')->group(function () {
     Route::post('/', [
         PurchaseController::class,
+        'store',
+    ]);
+});
+
+Route::prefix('vendas')->group(function () {
+    Route::post('/', [
+        SaleController::class,
         'store',
     ]);
 });
