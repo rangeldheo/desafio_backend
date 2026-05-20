@@ -122,4 +122,35 @@ class SaleController extends Controller
             ], 422);
         }
     }
+
+    /**
+     * Cancela uma venda.
+     */
+    public function cancel(
+        int $id
+    ): JsonResponse {
+        try {
+
+            $this->saleService
+                ->cancel($id);
+
+            return response()->json([
+                'success' => true,
+                'message' =>
+                    'Venda cancelada com sucesso.',
+                'data' => null,
+            ]);
+
+        } catch (
+            RuntimeException $exception
+        ) {
+
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    $exception->getMessage(),
+                'data' => null,
+            ], 422);
+        }
+    }
 }

@@ -36,4 +36,9 @@ Route::prefix('vendas')->group(function () {
         SaleController::class,
         'store',
     ]);
+
+    Route::post('/{id}/cancelar', [
+        SaleController::class,
+        'cancel',
+    ]);
 });

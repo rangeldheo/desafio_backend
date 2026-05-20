@@ -167,4 +167,74 @@ class SaleService
             ];
         });
     }
+
+    /**
+     * Cancela uma venda e
+     * devolve os itens ao estoque.
+     */
+    public function cancel(
+        int $saleId
+    ): void {
+        DB::transaction(function () use ($saleId) {
+
+            $sale = DB::table('sales')
+                ->where('id', $saleId)
+                ->first();
+
+            if (!$sale) {
+                throw new RuntimeException(
+                    'Venda não encontrada.'
+                );
+            }
+
+            if (
+                $sale->status
+                ===
+                'cancelled'
+            ) {
+                throw new RuntimeException(
+                    'A venda já está cancelada.'
+                );
+            }
+
+            $items = DB::table(
+                'sale_items'
+            )
+                ->where(
+                    'sale_id',
+                    $saleId
+                )
+                ->get();
+
+            foreach ($items as $item) {
+
+                /** @var Product $product */
+                $product = Product::query()
+                    ->find(
+                        $item->product_id
+                    );
+
+                if (!$product) {
+                    continue;
+                }
+
+                $product->update([
+                    'estoque' =>
+                        $product->estoque
+                        +
+                        $item->quantidade,
+                ]);
+            }
+
+            DB::table('sales')
+                ->where('id', $saleId)
+                ->update([
+                    'status' =>
+                        'cancelled',
+
+                    'updated_at' =>
+                        now(),
+                ]);
+        });
+    }
 }
