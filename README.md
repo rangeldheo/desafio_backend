@@ -1,58 +1,265 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🧪 ERP Estoque API – Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API REST do sistema ERP de estoque desenvolvida em **Laravel**, responsável pelo gerenciamento de:
 
-## About Laravel
+- Produtos
+- Compras
+- Vendas
+- Controle de estoque
+- Cálculo de custo médio ponderado
+- Cálculo de lucro
+- Histórico operacional
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# 🏗️ Arquitetura
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+O backend foi desenvolvido seguindo arquitetura desacoplada via API REST.
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```txt
+Frontend (Vue)
+↓ HTTP REST
+Laravel API
+↓
+MySQL
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Estrutura principal:
 
-## Contributing
+```txt
+app/
+├── Http/
+│   ├── Controllers/
+│   └── Requests/
+│
+├── Models/
+│
+└── Services/
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+# 🚀 Tecnologias
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Laravel
+- PHP 8.3
+- MySQL 8
+- Docker
+- Docker Compose
+- Eloquent ORM
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# ⚙️ Como Rodar
 
-## License
+## 1. Subir containers
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+docker compose up -d --build
+```
+
+---
+
+## 2. Entrar no container backend
+
+```bash
+docker exec -it erp_backend bash
+```
+
+---
+
+## 3. Instalar dependências
+
+```bash
+composer install
+```
+
+---
+
+## 4. Executar migrations
+
+```bash
+php artisan migrate
+```
+
+---
+
+# 🌐 API Base URL
+
+```txt
+http://localhost:8000/api
+```
+
+---
+
+# 📡 Endpoints
+
+## Produtos
+
+### Listar produtos
+
+```http
+GET /api/produtos
+```
+
+### Criar produto
+
+```http
+POST /api/produtos
+```
+
+Payload:
+
+```json
+{
+    "nome": "Mouse Gamer",
+    "preco_venda": 150
+}
+```
+
+---
+
+## Compras
+
+### Listar compras
+
+```http
+GET /api/compras
+```
+
+### Registrar compra
+
+```http
+POST /api/compras
+```
+
+Payload:
+
+```json
+{
+    "fornecedor": "Fornecedor XPTO",
+    "produtos": [
+        {
+            "id": 1,
+            "quantidade": 10,
+            "preco_unitario": 20
+        }
+    ]
+}
+```
+
+---
+
+## Vendas
+
+### Listar vendas
+
+```http
+GET /api/vendas
+```
+
+### Registrar venda
+
+```http
+POST /api/vendas
+```
+
+Payload:
+
+```json
+{
+    "cliente": "Fulano da Silva",
+    "produtos": [
+        {
+            "id": 1,
+            "quantidade": 2,
+            "preco_unitario": 50
+        }
+    ]
+}
+```
+
+---
+
+# 🧠 Regras de Negócio
+
+## Produtos
+
+- Nome obrigatório com mínimo de 3 caracteres
+- Preço de venda obrigatório e positivo
+- Estoque inicial igual a `0`
+- Custo médio inicial igual a `0`
+
+---
+
+## Compras
+
+Ao registrar uma compra:
+
+- Atualiza estoque
+- Recalcula custo médio ponderado
+- Salva histórico da compra
+- Executa transaction para garantir consistência
+
+### Fórmula do custo médio
+
+```txt
+((estoque atual × custo atual)
++
+(nova quantidade × novo custo))
+/
+(estoque atual + nova quantidade)
+```
+
+---
+
+## Vendas
+
+Ao registrar uma venda:
+
+- Valida estoque suficiente
+- Baixa estoque
+- Calcula receita
+- Calcula lucro
+- Salva histórico da venda
+- Utiliza rollback automático em falhas
+
+### Fórmula do lucro
+
+```txt
+(receita da venda)
+-
+(custo dos produtos vendidos)
+```
+
+---
+
+# 🔒 Consistência
+
+As operações de compra e venda utilizam:
+
+```txt
+Database Transactions
+```
+
+Garantindo:
+
+- Integridade dos dados
+- Rollback automático
+- Consistência do estoque
+
+---
+
+# 📌 Decisões Técnicas
+
+- Arquitetura desacoplada via API REST
+- Service Layer para regras de negócio
+- Form Requests para validações
+- Transactions para consistência
+- Docker para padronização do ambiente
+
+---
+
+# 👨‍💻 Autor
+
+Desenvolvido por **Rangel Dheo**.
